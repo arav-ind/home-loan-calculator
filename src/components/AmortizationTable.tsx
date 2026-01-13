@@ -16,6 +16,8 @@ interface YearGroup {
     startDate: string | Date;
     openingBalance: number;
     startEmi: number;
+    startMonth: number;
+    endMonth: number;
 }
 
 const AmortizationTable: React.FC<AmortizationTableProps> = ({ schedule }) => {
@@ -45,7 +47,9 @@ const AmortizationTable: React.FC<AmortizationTableProps> = ({ schedule }) => {
                     closingBalance: 0,
                     startDate: row.date,
                     openingBalance: row.openingBalance,
-                    startEmi: row.emi
+                    startEmi: row.emi,
+                    startMonth: row.month,
+                    endMonth: row.month
                 };
             }
 
@@ -56,6 +60,7 @@ const AmortizationTable: React.FC<AmortizationTableProps> = ({ schedule }) => {
             group.totalPrepayment += row.prepayment;
             group.totalPayment += (row.emi + row.prepayment);
             group.closingBalance = row.closingBalance;
+            group.endMonth = row.month; // Always update endMonth to the current row's month
         });
 
         return Object.values(groups).sort((a, b) => a.year - b.year);
@@ -83,7 +88,12 @@ const AmortizationTable: React.FC<AmortizationTableProps> = ({ schedule }) => {
                         <React.Fragment key={group.year}>
                             {/* Year Summary Row - Clickable */}
                             <tr className="year-row" onClick={() => toggleYear(group.year)}>
-                                <td><strong>-</strong></td>
+                                <td>
+                                    <strong>{group.startMonth}</strong>
+                                    <div className="sub-text" style={{ fontSize: '0.85em', fontWeight: 'normal', opacity: 0.8 }}>
+                                        {group.endMonth}
+                                    </div>
+                                </td>
                                 <td className="year-cell">
                                     <strong>{group.year}</strong>
                                     <div className="sub-text" style={{ fontSize: '0.85em', fontWeight: 'normal', opacity: 0.8 }}>
