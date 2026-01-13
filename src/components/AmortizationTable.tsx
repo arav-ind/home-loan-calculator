@@ -73,12 +73,12 @@ const AmortizationTable: React.FC<AmortizationTableProps> = ({ schedule }) => {
             <table>
                 <thead>
                     <tr>
-                        <th>EMI No.</th>
+                        <th className="mobile-hide">EMI No.</th>
                         <th>Date / Year</th>
-                        <th>Opening Balance</th>
+                        <th className="mobile-hide">Opening Balance</th>
                         <th>EMI</th>
-                        <th>Interest</th>
-                        <th>Principal</th>
+                        <th className="mobile-hide">Interest</th>
+                        <th className="mobile-hide">Principal</th>
                         <th>Prepayment</th>
                         <th>Closing Balance</th>
                     </tr>
@@ -91,7 +91,7 @@ const AmortizationTable: React.FC<AmortizationTableProps> = ({ schedule }) => {
                                 className={`year-row ${expandedYears[group.year] ? 'expanded' : ''}`}
                                 onClick={() => toggleYear(group.year)}
                             >
-                                <td>
+                                <td className="mobile-hide">
                                     <strong>{group.startMonth}</strong>
                                     <div className="sub-text" style={{ fontSize: '0.85em', fontWeight: 'normal', opacity: 0.8 }}>
                                         {group.endMonth}
@@ -103,10 +103,10 @@ const AmortizationTable: React.FC<AmortizationTableProps> = ({ schedule }) => {
                                         {formatDate(group.startDate)}
                                     </div>
                                 </td>
-                                <td>{formatCurrency(group.openingBalance)}</td>
+                                <td className="mobile-hide">{formatCurrency(group.openingBalance)}</td>
                                 <td>{formatCurrency(group.startEmi)}</td>
-                                <td><strong>{formatCurrency(group.totalInterest)}</strong></td>
-                                <td><strong>{formatCurrency(group.totalPrincipal)}</strong></td>
+                                <td className="mobile-hide"><strong>{formatCurrency(group.totalInterest)}</strong></td>
+                                <td className="mobile-hide"><strong>{formatCurrency(group.totalPrincipal)}</strong></td>
                                 <td>
                                     {group.totalPrepayment > 0 ? <strong>{formatCurrency(group.totalPrepayment)}</strong> : '-'}
                                 </td>
@@ -116,12 +116,12 @@ const AmortizationTable: React.FC<AmortizationTableProps> = ({ schedule }) => {
                             {/* Monthly Details */}
                             {expandedYears[group.year] && group.rows.map((row) => (
                                 <tr key={row.month} className={`month-row ${row.prepayment > 0 ? 'highlight-row' : ''}`}>
-                                    <td>{row.month}</td>
+                                    <td className="mobile-hide">{row.month}</td>
                                     <td>{formatDate(row.date)}</td>
-                                    <td>{formatCurrency(row.openingBalance)}</td>
+                                    <td className="mobile-hide">{formatCurrency(row.openingBalance)}</td>
                                     <td>{formatCurrency(row.emi)}</td>
-                                    <td>{formatCurrency(row.interest)}</td>
-                                    <td>{formatCurrency(row.principalComponent)}</td>
+                                    <td className="mobile-hide">{formatCurrency(row.interest)}</td>
+                                    <td className="mobile-hide">{formatCurrency(row.principalComponent)}</td>
                                     <td>{row.prepayment > 0 ? formatCurrency(row.prepayment) : '-'}</td>
                                     <td>{formatCurrency(row.closingBalance)}</td>
                                 </tr>
