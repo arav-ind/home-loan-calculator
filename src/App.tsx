@@ -3,7 +3,7 @@ import LoanForm from './components/LoanForm';
 import PrepaymentManager from './components/PrepaymentManager';
 import AmortizationTable from './components/AmortizationTable';
 import LoanCharts from './components/LoanCharts';
-import { generateSchedule, formatCurrency, formatDate, PrepaymentOptions, ScheduleRow } from './utils/loanCalculator';
+import { generateSchedule, calculateEMI, formatCurrency, formatDate, PrepaymentOptions, ScheduleRow } from './utils/loanCalculator';
 import homeIcon from './assets/home.svg';
 import './App.css';
 
@@ -21,6 +21,7 @@ interface SummaryData {
   totalPrepayment: number;
   completionDate: Date;
   numberOfEmis: number;
+  interestSaved: number;
 }
 
 function App() {
@@ -58,13 +59,20 @@ function App() {
         const totalInterest = newSchedule.reduce((acc, row) => acc + row.interest, 0);
         const totalPrepayment = newSchedule.reduce((acc, row) => acc + row.prepayment, 0);
 
+        // Calculate Original Interest (without prepayments)
+        const originalEMI = calculateEMI(p, r, t);
+        const originalTotalPayment = originalEMI * t * 12;
+        const originalTotalInterest = originalTotalPayment - p;
+        const interestSaved = Math.max(0, originalTotalInterest - totalInterest);
+
         setSummary({
           totalPayment,
           totalPrincipal,
           totalInterest,
           totalPrepayment,
           completionDate: newSchedule[newSchedule.length - 1].date,
-          numberOfEmis: newSchedule.length
+          numberOfEmis: newSchedule.length,
+          interestSaved
         });
       }
     }
@@ -93,33 +101,40 @@ function App() {
 
         {summary && (
           <div className="card summary-card">
-            <div className="summary-item">
-              <span>Total Principal</span>
-              <strong>{formatCurrency(summary.totalPrincipal)}</strong>
-            </div>
-
-            {summary.totalPrepayment > 0 && (
+            <div className="summary-grid">
               <div className="summary-item">
-                <span>Total Prepayment</span>
-                <strong>{formatCurrency(summary.totalPrepayment)}</strong>
+                <span>Total Principal</span>
+                <strong>{formatCurrency(summary.totalPrincipal)}</strong>
               </div>
-            )}
+              <div className="summary-item">
+                <span>Total Interest</span>
+                <strong>{formatCurrency(summary.totalInterest)}</strong>
+              </div>
+              <div className="summary-item">
+                <span>Total Amount</span>
+                <strong>{formatCurrency(summary.totalPayment)}</strong>
+              </div>
 
-            <div className="summary-item">
-              <span>Total Interest</span>
-              <strong>{formatCurrency(summary.totalInterest)}</strong>
-            </div>
-            <div className="summary-item">
-              <span>Total Amount</span>
-              <strong>{formatCurrency(summary.totalPayment)}</strong>
-            </div>
-            <div className="summary-item">
-              <span>Last EMI Date</span>
-              <strong>{formatDate(summary.completionDate)}</strong>
-            </div>
-            <div className="summary-item">
-              <span>No. of EMIs</span>
-              <strong>{summary.numberOfEmis}</strong>
+              {summary.totalPrepayment > 0 && (
+                <div className="summary-item highlight-teal">
+                  <span>Total Prepayment</span>
+                  <strong>{formatCurrency(summary.totalPrepayment)}</strong>
+                </div>
+              )}
+
+              <div className="summary-item highlight-green">
+                <span>Interest Saved</span>
+                <strong>{formatCurrency(summary.interestSaved)}</strong>
+              </div>
+
+              <div className="summary-item">
+                <span>Last EMI Date</span>
+                <strong>{formatDate(summary.completionDate)}</strong>
+              </div>
+              <div className="summary-item">
+                <span>No. of EMIs</span>
+                <strong>{summary.numberOfEmis}</strong>
+              </div>
             </div>
           </div>
         )}
