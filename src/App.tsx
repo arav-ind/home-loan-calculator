@@ -18,6 +18,7 @@ interface SummaryData {
   totalInterest: number;
   totalPrepayment: number;
   completionDate: Date;
+  numberOfEmis: number;
 }
 
 function App() {
@@ -60,7 +61,8 @@ function App() {
           totalPrincipal,
           totalInterest,
           totalPrepayment,
-          completionDate: newSchedule[newSchedule.length - 1].date
+          completionDate: newSchedule[newSchedule.length - 1].date,
+          numberOfEmis: newSchedule.length
         });
       }
     }
@@ -109,6 +111,10 @@ function App() {
             <div className="summary-item">
               <span>Last EMI Date</span>
               <strong>{formatDate(summary.completionDate)}</strong>
+            </div>
+            <div className="summary-item">
+              <span>No. of EMIs</span>
+              <strong>{summary.numberOfEmis}</strong>
             </div>
           </div>
         )}
