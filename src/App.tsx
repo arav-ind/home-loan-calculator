@@ -2,11 +2,26 @@ import React, { useState, useEffect } from 'react';
 import LoanForm from './components/LoanForm';
 import PrepaymentManager from './components/PrepaymentManager';
 import AmortizationTable from './components/AmortizationTable';
-import { generateSchedule, formatCurrency, formatDate } from './utils/loanCalculator';
+import { generateSchedule, formatCurrency, formatDate, PrepaymentOptions, ScheduleRow } from './utils/loanCalculator';
 import './App.css';
 
+interface LoanData {
+  principal: string;
+  rate: string;
+  tenure: string;
+  startDate: string;
+}
+
+interface SummaryData {
+  totalPayment: number;
+  totalPrincipal: number;
+  totalInterest: number;
+  totalPrepayment: number;
+  completionDate: Date;
+}
+
 function App() {
-  const [loanData, setLoanData] = useState({
+  const [loanData, setLoanData] = useState<LoanData>({
     principal: '5000000',
     rate: '8.5',
     tenure: '20',
@@ -14,14 +29,14 @@ function App() {
   });
 
   // New State Structure
-  const [prepayments, setPrepayments] = useState({
+  const [prepayments, setPrepayments] = useState<PrepaymentOptions>({
     oneTime: [],
     monthly: { amount: '', date: '' },
     yearly: { amount: '', date: '' }
   });
 
-  const [schedule, setSchedule] = useState([]);
-  const [summary, setSummary] = useState(null);
+  const [schedule, setSchedule] = useState<ScheduleRow[]>([]);
+  const [summary, setSummary] = useState<SummaryData | null>(null);
 
   useEffect(() => {
     const { principal, rate, tenure, startDate } = loanData;
@@ -51,7 +66,7 @@ function App() {
     }
   }, [loanData, prepayments]);
 
-  const handleChange = (e) => {
+  const handleChange = (e: { target: { name: string; value: string } }) => {
     const { name, value } = e.target;
     setLoanData({ ...loanData, [name]: value });
   };
@@ -76,11 +91,6 @@ function App() {
               <strong>{formatCurrency(summary.totalPrincipal)}</strong>
             </div>
 
-            {/* Show Prepayment if any (or always?) User said "if any", then "like total principal".
-                 Let's show it if > 0. If 0, maybe hide or show 0?
-                 User said "show prepayment also if any" in previous turn.
-                 I will keep > 0 check to keep UI clean if no prepayments.
-             */}
             {summary.totalPrepayment > 0 && (
               <div className="summary-item">
                 <span>Total Prepayment</span>

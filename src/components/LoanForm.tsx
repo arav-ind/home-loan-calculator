@@ -2,14 +2,29 @@ import React from 'react';
 import FormattedNumberInput from './FormattedNumberInput';
 import FormattedDateInput from './FormattedDateInput';
 
-const LoanForm = ({ data, handleChange }) => {
+interface LoanData {
+    principal: string;
+    rate: string;
+    tenure: string;
+    startDate: string;
+}
 
-    const handlePrincipalChange = (rawValue) => {
-        handleChange({ target: { name: 'principal', value: rawValue } });
+interface LoanFormProps {
+    data: LoanData;
+    handleChange: (e: { target: { name: string; value: string } }) => void;
+}
+
+const LoanForm: React.FC<LoanFormProps> = ({ data, handleChange }) => {
+    const handlePrincipalChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        handleChange({
+            target: { name: 'principal', value: e.target.value }
+        });
     };
 
-    const handleDateChange = (isoDate) => {
-        handleChange({ target: { name: 'startDate', value: isoDate } });
+    const handleDateChange = (value: string) => {
+        handleChange({
+            target: { name: 'startDate', value }
+        });
     };
 
     return (

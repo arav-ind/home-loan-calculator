@@ -1,41 +1,49 @@
 import React, { useState } from 'react';
+import { formatCurrency, formatDate, Prepayment, PrepaymentOptions } from '../utils/loanCalculator';
 import FormattedNumberInput from './FormattedNumberInput';
 import FormattedDateInput from './FormattedDateInput';
 
-const PrepaymentManager = ({ prepayments, setPrepayments }) => {
-    const [activeTab, setActiveTab] = useState('oneTime');
-    const [newOneTime, setNewOneTime] = useState({ date: '', amount: '' });
+interface PrepaymentManagerProps {
+    prepayments: PrepaymentOptions;
+    setPrepayments: React.Dispatch<React.SetStateAction<PrepaymentOptions>>;
+}
 
-    // Helpers for One Time
+const PrepaymentManager: React.FC<PrepaymentManagerProps> = ({ prepayments, setPrepayments }) => {
+    const [activeTab, setActiveTab] = useState<'oneTime' | 'monthly' | 'yearly'>('oneTime');
+
+    // Local state for One Time addition
+    const [newOneTime, setNewOneTime] = useState<{ date: string; amount: string }>({ date: '', amount: '' });
+
     const addOneTime = () => {
         if (newOneTime.date && newOneTime.amount) {
             setPrepayments({
                 ...prepayments,
-                oneTime: [...prepayments.oneTime, { ...newOneTime, id: Date.now() }]
+                oneTime: [
+                    ...(prepayments.oneTime || []),
+                    { amount: newOneTime.amount, date: newOneTime.date }
+                ]
             });
             setNewOneTime({ date: '', amount: '' });
         }
     };
 
-    const removeOneTime = (id) => {
+    const removeOneTime = (index: number) => {
+        const updated = [...(prepayments.oneTime || [])];
+        updated.splice(index, 1);
+        setPrepayments({ ...prepayments, oneTime: updated });
+    };
+
+    const updateMonthly = (field: keyof Prepayment, value: string) => {
         setPrepayments({
             ...prepayments,
-            oneTime: prepayments.oneTime.filter(p => p.id !== id)
+            monthly: { ...prepayments.monthly, [field]: value } as Prepayment
         });
     };
 
-    // Helpers for Recurring
-    const updateMonthly = (field, value) => {
+    const updateYearly = (field: keyof Prepayment, value: string) => {
         setPrepayments({
             ...prepayments,
-            monthly: { ...prepayments.monthly, [field]: value }
-        });
-    };
-
-    const updateYearly = (field, value) => {
-        setPrepayments({
-            ...prepayments,
-            yearly: { ...prepayments.yearly, [field]: value }
+            yearly: { ...prepayments.yearly, [field]: value } as Prepayment
         });
     };
 
@@ -77,21 +85,22 @@ const PrepaymentManager = ({ prepayments, setPrepayments }) => {
                             </div>
                             <div className="form-group">
                                 <label>Amount (INR)</label>
+                                {/* Use FormattedNumberInput with raw state */}
                                 <FormattedNumberInput
                                     value={newOneTime.amount}
-                                    onChange={(val) => setNewOneTime({ ...newOneTime, amount: val })}
+                                    onChange={(e) => setNewOneTime({ ...newOneTime, amount: e.target.value })}
                                     placeholder="Amount"
                                 />
                             </div>
                             <button className="btn-add" onClick={addOneTime}>+</button>
                         </div>
+
                         <div className="prepayment-list">
-                            {prepayments.oneTime.length === 0 && <p className="empty-text">No prepayments added.</p>}
-                            {prepayments.oneTime.map((p) => (
-                                <div key={p.id} className="prepayment-item">
-                                    <span>{p.date.split('-').reverse().join('/')}</span>
-                                    <span>₹{Number(p.amount).toLocaleString('en-IN')}</span>
-                                    <button className="btn-remove" onClick={() => removeOneTime(p.id)}>×</button>
+                            {(!prepayments.oneTime || prepayments.oneTime.length === 0) && <p className="empty-text">No prepayments added.</p>}
+                            {prepayments.oneTime && prepayments.oneTime.map((p, index) => (
+                                <div key={index} className="prepayment-item">
+                                    <span>{formatDate(p.date)} - {formatCurrency(Number(p.amount))}</span>
+                                    <button className="btn-remove" onClick={() => removeOneTime(index)}>×</button>
                                 </div>
                             ))}
                         </div>
@@ -104,16 +113,16 @@ const PrepaymentManager = ({ prepayments, setPrepayments }) => {
                         <div className="form-group">
                             <label>Start Date</label>
                             <FormattedDateInput
-                                value={prepayments.monthly.date}
+                                value={String(prepayments.monthly?.date || '')}
                                 onChange={(val) => updateMonthly('date', val)}
                             />
                         </div>
                         <div className="form-group">
                             <label>Monthly Amount (INR)</label>
                             <FormattedNumberInput
-                                value={prepayments.monthly.amount}
-                                onChange={(val) => updateMonthly('amount', val)}
-                                placeholder="e.g. 10,000"
+                                value={prepayments.monthly?.amount || ''}
+                                onChange={(e) => updateMonthly('amount', e.target.value)}
+                                placeholder="e.g. 5000"
                             />
                         </div>
                     </div>
@@ -125,22 +134,21 @@ const PrepaymentManager = ({ prepayments, setPrepayments }) => {
                         <div className="form-group">
                             <label>Start Date</label>
                             <FormattedDateInput
-                                value={prepayments.yearly.date}
+                                value={String(prepayments.yearly?.date || '')}
                                 onChange={(val) => updateYearly('date', val)}
                             />
                         </div>
                         <div className="form-group">
                             <label>Yearly Amount (INR)</label>
                             <FormattedNumberInput
-                                value={prepayments.yearly.amount}
-                                onChange={(val) => updateYearly('amount', val)}
+                                value={prepayments.yearly?.amount || ''}
+                                onChange={(e) => updateYearly('amount', e.target.value)}
                                 placeholder="e.g. 1,00,000"
                             />
                         </div>
                     </div>
                 )}
             </div>
-
         </div>
     );
 };
