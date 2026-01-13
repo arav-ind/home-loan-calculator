@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import LoanForm from './components/LoanForm';
 import PrepaymentManager from './components/PrepaymentManager';
 import AmortizationTable from './components/AmortizationTable';
+import LoanCharts from './components/LoanCharts';
 import { generateSchedule, formatCurrency, formatDate, PrepaymentOptions, ScheduleRow } from './utils/loanCalculator';
 import homeIcon from './assets/home.svg';
 import './App.css';
@@ -121,6 +122,10 @@ function App() {
               <strong>{summary.numberOfEmis}</strong>
             </div>
           </div>
+        )}
+
+        {summary && schedule.length > 0 && (
+          <LoanCharts schedule={schedule} summary={summary} />
         )}
 
         <AmortizationTable schedule={schedule} />
