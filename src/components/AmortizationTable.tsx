@@ -87,7 +87,10 @@ const AmortizationTable: React.FC<AmortizationTableProps> = ({ schedule }) => {
                     {groupedSchedule.map((group) => (
                         <React.Fragment key={group.year}>
                             {/* Year Summary Row - Clickable */}
-                            <tr className="year-row" onClick={() => toggleYear(group.year)}>
+                            <tr
+                                className={`year-row ${expandedYears[group.year] ? 'expanded' : ''}`}
+                                onClick={() => toggleYear(group.year)}
+                            >
                                 <td>
                                     <strong>{group.startMonth}</strong>
                                     <div className="sub-text" style={{ fontSize: '0.85em', fontWeight: 'normal', opacity: 0.8 }}>

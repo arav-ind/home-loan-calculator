@@ -101,6 +101,7 @@ header {
 h1 {
   font-weight: 600;
   background: linear-gradient(to right, #c084fc, #f472b6);
+  background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   font-size: 2.5rem;
@@ -293,6 +294,16 @@ td {
 
 tr:hover td {
   background: rgba(255, 255, 255, 0.02);
+}
+
+.year-row {
+  cursor: pointer;
+}
+
+.year-row.expanded td {
+  background: rgba(139, 92, 246, 0.15) !important;
+  /* Primary color hint */
+  border-bottom-color: rgba(139, 92, 246, 0.3);
 }
 
 .highlight-row td {
