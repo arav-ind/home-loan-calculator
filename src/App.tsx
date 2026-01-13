@@ -3,6 +3,7 @@ import LoanForm from './components/LoanForm';
 import PrepaymentManager from './components/PrepaymentManager';
 import AmortizationTable from './components/AmortizationTable';
 import { generateSchedule, formatCurrency, formatDate, PrepaymentOptions, ScheduleRow } from './utils/loanCalculator';
+import homeIcon from './assets/home.svg';
 import './App.css';
 
 interface LoanData {
@@ -75,8 +76,11 @@ function App() {
 
   return (
     <div className="app-container">
-      <header>
-        <h1>Home Loan Amortization</h1>
+      <header className="app-header">
+        <div className="logo-container">
+          <img src={homeIcon} alt="Home Loan Calculator" className="app-logo" />
+          <h1>Home Loan Calculator</h1>
+        </div>
       </header>
 
       <main className="main-content">
