@@ -3,6 +3,7 @@ import LoanForm from './components/LoanForm';
 import PrepaymentManager from './components/PrepaymentManager';
 import AmortizationTable from './components/AmortizationTable';
 import LoanCharts from './components/LoanCharts';
+import ExportButtons from './components/ExportButtons';
 import { generateSchedule, calculateEMI, formatCurrency, formatDate, PrepaymentOptions, ScheduleRow } from './utils/loanCalculator';
 import homeIcon from './assets/home.svg';
 import './App.css';
@@ -141,6 +142,10 @@ function App() {
 
         {summary && schedule.length > 0 && (
           <LoanCharts schedule={schedule} summary={summary} />
+        )}
+
+        {summary && schedule.length > 0 && (
+          <ExportButtons schedule={schedule} summary={summary} loanData={loanData} />
         )}
 
         <AmortizationTable schedule={schedule} />
